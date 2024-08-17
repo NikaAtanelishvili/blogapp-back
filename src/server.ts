@@ -4,9 +4,11 @@ import bodyParser from 'body-parser'
 import { api } from 'routes'
 import { errorHandlerMiddleware } from 'middlewares'
 
-import { cors } from 'config'
+import { cors, mongoConnect } from 'config'
 
 const server = express()
+
+mongoConnect()
 
 server.use(cors)
 
