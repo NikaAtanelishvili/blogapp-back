@@ -32,3 +32,29 @@ export const postBlog: Handler = async (req, res, next) => {
     next(err)
   }
 }
+
+export const getBlog: Handler = async (req, res, next) => {
+  try {
+    const blogId = req.params.id
+
+    // Find the blog by ID in blogs collection
+    const blog = await Blog.findOne({ id: blogId })
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog was not found' })
+    }
+
+    // Generate the full URL for the image
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${blog.image}`
+
+    // Add the image URL to the blog object
+    const blogWithImage = {
+      ...blog.toObject(), // Convert Mongoose document to plain JS object (Because we need to add imageUrl)
+      imageUrl,
+    }
+
+    res.status(200).json(blogWithImage)
+  } catch (err) {
+    next(err)
+  }
+}
