@@ -1,0 +1,389 @@
+openapi: 3.0.0
+info:
+  title: Blog App
+  version: 1.0.0
+  description: API documentation for your backend Node.js and Express app.
+
+servers:
+  - url: http://localhost:8080/api/
+    description: Local server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Category1:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the category (set by MongoDB)
+          example: '66c083f3bd155701c9016bd3'
+        id:
+          type: number
+          description: The unique identifier for the category
+          example: 1
+        title:
+          type: string
+          description: The title of the category.
+          example: 'მარკეტი'
+        background_color:
+          type: string
+          description: The background color of the category.
+          example: '#FFFFAA'
+        text_color:
+          type: string
+          description: The text color of the category.
+          example: '#333333'
+    Category2:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the category (set by MongoDB)
+          example: '66c084e9bd155701c9016bd6'
+        id:
+          type: number
+          description: The unique identifier for the category
+          example: 2
+        title:
+          type: string
+          description: The title of the category.
+          example: 'აპლიკაცია'
+        background_color:
+          type: string
+          description: The background color of the category.
+          example: '#1AC7A8'
+        text_color:
+          type: string
+          description: The text color of the category.
+          example: '#FFFFFF'
+    Category3:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for the category (set by MongoDB)
+          example: '66c08513bd155701c9016bd8'
+        id:
+          type: number
+          description: The unique identifier for the category
+          example: 3
+        title:
+          type: string
+          description: The title of the category.
+          example: 'ხელოვნური ინტელექტი'
+        background_color:
+          type: string
+          description: The background color of the category.
+          example: '#B71FDD'
+        text_color:
+          type: string
+          description: The text color of the category.
+          example: '#FFFFFF'
+    Blog1:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the blog.
+          example: '1f78e2bc-1234-5678-9012-abcdef123456'
+        title:
+          type: string
+          description: The title of the blog.
+          example: 'EOMM-ის მრჩეველთა საბჭოს ნინო ეგაძე შეუერთდა'
+        description:
+          type: string
+          description: The content or description of the blog.
+          example: '6 თვის შემდეგ ყველის ბრმა დეგუსტაციის დროც დადგა. მაქსიმალური სიზუსტისთვის, ეს პროცესი...'
+        image:
+          type: string
+          description: The URL of the blog's image.
+          example: 'http://localhost:8080/uploads/image1.png'
+        publish_date:
+          type: string
+          format: date
+          description: The publication date of the blog.
+          example: '2024-08-19'
+        categories:
+          type: array
+          items:
+            type: integer
+          description: The IDs of the categories associated with the blog.
+          example: [1, 2, 3]
+        author:
+          type: string
+          description: The author of the blog.
+          example: 'ნია გოგსაძე'
+        email:
+          type: string
+          description: The email of the author.
+          example: 'johndoe@redberry.ge'
+    Blog2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the blog.
+          example: '1f78e2bc-1234-5678-9012-abcdef123434'
+        title:
+          type: string
+          description: The title of the blog.
+          example: 'მობილური ფოტოგრაფიის კონკურსის გამარჯვებულთა ვინაობა ცნობილია. მ...'
+        description:
+          type: string
+          description: The content or description of the blog.
+          example: '6 თვის შემდეგ ყველის ბრმა დეგუსტაციის დროც დადგა. მაქსიმალური სიზუსტისთვის, ეს პროცესი...'
+        image:
+          type: string
+          description: The URL of the blog's image.
+          example: 'http://localhost:8080/uploads/image2.png'
+        publish_date:
+          type: string
+          format: date
+          description: The publication date of the blog.
+          example: '2024-08-19'
+        categories:
+          type: array
+          items:
+            type: integer
+          description: The IDs of the categories associated with the blog.
+          example: [4, 5, 1, 2]
+        author:
+          type: string
+          description: The author of the blog.
+          example: 'კობა ბელთაძე'
+        email:
+          type: string
+          description: The email of the author.
+          example: 'johndoe2@redberry.ge'
+  responses:
+    InternalServerError:
+      description: Database not connected or other server errors.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Database is not connected'
+
+paths:
+  /categories:
+    get:
+      summary: Get all categories
+      description: Retrieve a list of all categories from the database.
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: Categories fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/Category1'
+                        - $ref: '#/components/schemas/Category2'
+                        - $ref: '#/components/schemas/Category3'
+                  message:
+                    type: string
+                    example: 'Categories were fetched successfully'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /login:
+    post:
+      summary: User login
+      description: Authenticate a user by email and return a JWT token if the login is successful.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email address of the user.
+                  example: 'user@redberry.ge'
+      responses:
+        '200':
+          description: Login successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Login successful'
+                  token:
+                    type: string
+                    description: The JWT token generated for the user.
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                  expiresIn:
+                    type: string
+                    description: The expiration time for the token.
+                    example: '1h'
+        '401':
+          description: Invalid email provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid email'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /blog:
+    post:
+      summary: Post a new blog
+      description: Post a new blog by providing blog details. The request must be authenticated.
+      tags:
+        - Blogs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The title of the blog.
+                  example: 'Understanding Node.js'
+                description:
+                  type: string
+                  description: The content or description of the blog.
+                  example: 'This blog explains the fundamentals of Node.js...'
+                image:
+                  type: string
+                  format: binary
+                  description: The image file for the blog.
+                publish_date:
+                  type: string
+                  format: date
+                  description: The publication date of the blog.
+                  example: '2024-08-19'
+                categories:
+                  type: string
+                  description: A JSON string representing an array of category IDs.
+                  example: '[1, 2, 3]'
+                author:
+                  type: string
+                  description: The author of the blog.
+                  example: 'John Doe'
+                email:
+                  type: string
+                  description: The email of the author.
+                  example: 'johndoe@example.com'
+      responses:
+        '201':
+          description: Blog was posted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Blog was posted successfully'
+        '403':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User is not authorized.'
+        '422':
+          description: Validation error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error: [error details]'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /blog/{id}:
+    get:
+      summary: Get a specific blog by ID
+      description: Retrieve a blog by its ID from the database.
+      tags:
+        - Blogs
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the blog.
+          example: '1f78e2bc-1234-5678-9012-abcdef123456'
+      responses:
+        '200':
+          description: Blog retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog1'
+        '404':
+          description: Blog not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Blog was not found'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /blogs:
+    get:
+      summary: Get all blogs
+      description: Retrieve a list of all blogs from the database.
+      tags:
+        - Blogs
+      responses:
+        '200':
+          description: Blogs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/Blog1'
+                    - $ref: '#/components/schemas/Blog2'
+        '404':
+          description: No blogs were found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'No blogs were found'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
