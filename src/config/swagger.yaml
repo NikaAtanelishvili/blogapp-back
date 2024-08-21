@@ -5,7 +5,7 @@ info:
   description: API documentation for your backend Node.js and Express app.
 
 servers:
-  - url: http://localhost:8080/api/
+  - url: https://blogapp-back-vwfv.onrender.com/api/
     description: Local server
 
 components:
