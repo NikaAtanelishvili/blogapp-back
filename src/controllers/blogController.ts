@@ -39,7 +39,8 @@ export const getBlog: Handler = async (req, res, next) => {
     const blogId = req.params.id
 
     // Find the blog by ID in blogs collection
-    const blog = await Blog.findOne({ id: blogId })
+    // reason for deep coping: NEW BLOG.CATEGORIES IS'T TYPE Number[]
+    const blog = JSON.parse(JSON.stringify(await Blog.findOne({ id: blogId })))
 
     if (!blog) {
       throw { message: 'Blog was not found', statusCode: 404 }
@@ -54,7 +55,7 @@ export const getBlog: Handler = async (req, res, next) => {
 
     const categories = await db.collection('categories').find().toArray()
 
-    blog.categories.map(id => {
+    blog.categories = blog.categories.map((id: number) => {
       return categories.find(category => category.id === id)
     })
 
@@ -69,7 +70,8 @@ export const getBlog: Handler = async (req, res, next) => {
 
 export const getBlogs: Handler = async (req, res, next) => {
   try {
-    const blogs = await Blog.find()
+    // reason for deep coping: NEW BLOGS[X].CATEGORIES AREN'T TYPE Number[]
+    const blogs = JSON.parse(JSON.stringify(await Blog.find()))
 
     if (!blogs.length) {
       return res.status(404).json({ message: 'No blogs were found' })
@@ -85,7 +87,7 @@ export const getBlogs: Handler = async (req, res, next) => {
     const categories = await db.collection('categories').find().toArray()
 
     for (let i = 0; i < blogs.length; i++) {
-      blogs[i].categories.map(id => {
+      blogs[i].categories = blogs[i].categories.map((id: number) => {
         return categories.find(category => category.id === id)
       })
 
