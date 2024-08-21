@@ -102,7 +102,7 @@ components:
         image:
           type: string
           description: The URL of the blog's image.
-          example: 'http://localhost:8080/uploads/image1.png'
+          example: 'https://blogapp-back-vwfv.onrender.com/uploads/image1.png'
         publish_date:
           type: string
           format: date
@@ -140,7 +140,7 @@ components:
         image:
           type: string
           description: The URL of the blog's image.
-          example: 'http://localhost:8080/uploads/image2.png'
+          example: 'https://blogapp-back-vwfv.onrender.com/uploads/image2.png'
         publish_date:
           type: string
           format: date
