@@ -1,5 +1,6 @@
 import { Handler } from 'express'
 import { Blog } from 'models'
+import mongoose from 'mongoose'
 import { blogValidationSchema } from 'schemas'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -41,8 +42,22 @@ export const getBlog: Handler = async (req, res, next) => {
     const blog = await Blog.findOne({ id: blogId })
 
     if (!blog) {
-      return res.status(404).json({ message: 'Blog was not found' })
+      throw { message: 'Blog was not found', statusCode: 404 }
     }
+
+    // TO TURN BLOG.CATEGORIES ([1, 2, 4...]) TO AN ACTUAL CATEGORIES (with text/background_color, title...)
+    const db = mongoose.connection.db
+
+    if (!db) {
+      throw { message: 'Database is not connected', statusCode: 500 }
+    }
+
+    const categories = await db.collection('categories').find().toArray()
+
+    blog.categories.map(id => {
+      return categories.find(category => category.id === id)
+    })
+
     // Add the image URL to the blog object
     blog.image = `${req.protocol}://${req.get('host')}/uploads/${blog.image}`
 
@@ -60,7 +75,20 @@ export const getBlogs: Handler = async (req, res, next) => {
       return res.status(404).json({ message: 'No blogs were found' })
     }
 
+    // TO TURN BLOGS.[X].CATEGORIES ([1, 2, 4...]) TO AN ACTUAL CATEGORIES (with text/background_color, title...)
+    const db = mongoose.connection.db
+
+    if (!db) {
+      throw { message: 'Database is not connected', statusCode: 500 }
+    }
+
+    const categories = await db.collection('categories').find().toArray()
+
     for (let i = 0; i < blogs.length; i++) {
+      blogs[i].categories.map(id => {
+        return categories.find(category => category.id === id)
+      })
+
       blogs[i].image =
         `${req.protocol}://${req.get('host')}/uploads/${blogs[i].image}`
     }
