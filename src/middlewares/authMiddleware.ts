@@ -5,18 +5,18 @@ import dotenv from 'dotenv'
 const authMiddleware: Handler = async (req, _res, next) => {
   try {
     dotenv.config()
+
     const { JWT_TOKEN_SECRET } = process.env
 
-    const authorization = req.get('Authorization')
+    const token = req.cookies.authToken // Extract token from the cookies
 
-    if (!authorization) {
+    if (!token) {
       const error: any = new Error('User is not authorized.')
       error.statusCode = 403
       throw error
     }
 
-    const [_, token] = authorization.split(' ')
-    jwt.verify(token, JWT_TOKEN_SECRET as jwt.Secret)
+    jwt.verify(token, JWT_TOKEN_SECRET as jwt.Secret) // Verify the token
 
     next()
   } catch (err) {

@@ -1,5 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 
 import { api } from 'routes'
 import { errorHandlerMiddleware } from 'middlewares'
@@ -17,6 +18,8 @@ server.use(cors)
 server.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 server.use(bodyParser.json())
+
+server.use(cookieParser())
 
 // Serve static files from the uploads directory
 server.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))

@@ -29,9 +29,15 @@ export const login: Handler = async (req, res, next) => {
       expiresIn: JWT_TOKEN_EXPIRE_TIME,
     })
 
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
+      sameSite: 'lax', // Helps mitigate CSRF
+      maxAge: 3600000, // JWT expiration time in milliseconds
+    })
+
     res.status(200).json({
       message: 'Login successful',
-      token,
       expiresIn: JWT_TOKEN_EXPIRE_TIME,
     })
   } catch (err) {
