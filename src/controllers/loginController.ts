@@ -7,7 +7,11 @@ dotenv.config()
 
 export const login: Handler = async (req, res, next) => {
   try {
-    const { JWT_TOKEN_SECRET, JWT_TOKEN_EXPIRE_TIME } = process.env
+    const {
+      JWT_TOKEN_SECRET,
+      JWT_TOKEN_EXPIRE_TIME,
+      JWT_TOKEN_EXPIRE_TIME_IN_MS,
+    } = process.env
 
     const db = mongoose.connection.db
 
@@ -33,12 +37,12 @@ export const login: Handler = async (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
       sameSite: 'lax', // Helps mitigate CSRF
-      maxAge: 3600000, // JWT expiration time in milliseconds
+      maxAge: Number(JWT_TOKEN_EXPIRE_TIME_IN_MS), // JWT expiration time in milliseconds
     })
 
     res.status(200).json({
       message: 'Login successful',
-      expiresIn: JWT_TOKEN_EXPIRE_TIME,
+      expiresAt: Date.now() + Number(JWT_TOKEN_EXPIRE_TIME_IN_MS), // sent exact timestep
     })
   } catch (err) {
     next(err)
