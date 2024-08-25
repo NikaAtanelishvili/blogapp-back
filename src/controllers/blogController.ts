@@ -10,7 +10,7 @@ export const postBlog: Handler = async (req, res, next) => {
       id: uuidv4(), // Generate a unique ID for URLs
       title: req.body.title,
       description: req.body.description,
-      image: req.file?.filename, // Extract the filename from the uploaded file
+      image: req.file?.filename, // Use the filename of the file stored in GridFS
       publish_date: req.body.publish_date,
       categories: JSON.parse(req.body.categories).map(Number), // "[1,2,3,4...]" => [1,2,3,4...]
       author: req.body.author,
@@ -60,7 +60,7 @@ export const getBlog: Handler = async (req, res, next) => {
     })
 
     // Add the image URL to the blog object
-    blog.image = `${req.protocol}://${req.get('host')}/uploads/${blog.image}`
+    blog.image = `${req.protocol}://${req.get('host')}/api/file/${blog.image}`
 
     res.status(200).json(blog)
   } catch (err) {
@@ -92,7 +92,7 @@ export const getBlogs: Handler = async (req, res, next) => {
       })
 
       blogs[i].image =
-        `${req.protocol}://${req.get('host')}/uploads/${blogs[i].image}`
+        `${req.protocol}://${req.get('host')}/api/file/${blogs[i].image}`
     }
 
     res.status(200).json(blogs)
